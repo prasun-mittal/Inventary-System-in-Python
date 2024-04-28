@@ -1,0 +1,135 @@
+import pandas as pd
+key='prasun@123'
+l={'Banana':[50,3],'Apple':[200,4],'Kiwi':[300,2],'Papaya':[150,4],'Orange':[250,5],'Imli':[400,4],'Guava':[100,1],'Pineapple':[100,8],'Milk':[20,2],'Dahi':[40,5]}
+
+def search(a,l):
+    for i in l:
+        if i==a:
+            return f'{a} is available in our inventary with price={l[i][0]}'
+    return f'Sorry! {a} is not Present'
+
+def otp(n=4):
+    from random import choice
+    l=[]
+    for i in range(26):
+        if i<10:
+            l.append(str(i))
+        l.append(chr(i+65))
+        l.append(chr(i+97))
+    s=''
+    for i in range(n):
+       s=s+choice(l) 
+    return s
+
+def owner():
+    k=input('Enter the security Key to acces Inventary:  ')
+    if k==key:
+        otp_1=otp()
+        print('OTP ->',otp_1)
+        ot=input('Enter the above OTP:  ')
+        if ot==otp_1:
+            print("\t1. to add an item\n\t2. to change/update price\n\t3.to update available Qty.\n\t4.To view the final list")
+            owner_ch=int(input('Enter your choice from above:  '))
+            
+            if owner_ch==1:
+                n=int(input('Enter no. of items you wanted to add:  '))
+                for i in range(1,n+1):
+                    name=input('enter item name: ')
+                    price=int(input('Enter item price: '))
+                    qty=int('Enter available Quantity: ')
+                    global l
+                    l[name]=[price,qty]
+                    
+            elif owner_ch==2:
+                print(pd.DataFrame(l,index=['Price','Available']).T)
+                while (True):
+                    print('write save to save changes')
+                    a=input('Enter name of product').capitalize()
+                    if a=='Save':
+                        break
+                    p=int(input(f'now enter updated price of {a}: '))
+                    l[a][0]=p
+                print(pd.DataFrame(l,index=['Price','Available']).T)
+                                    
+            elif owner_ch==3:
+                print(pd.DataFrame(l,index=['Price','Available']).T)
+                while (True):
+                    print('write save to save changes')
+                    a=input('Enter name of product').capitalize()
+                    if a=='Save':
+                        break
+                    p=int(input(f'now enter updated Qty of {a}: '))
+                    l[a][1]=p
+                print(pd.DataFrame(l,index=['Price','Available']).T)
+                
+            elif owner_ch==4:
+                print(pd.DataFrame(l,index=['Price','Available']).T)
+
+            else:
+                print('invalid choice!')
+        
+        else:
+            print('Incorrect OTP')
+        
+        
+    else:
+        print("Sorry! the entered key is wrong we can't grant you access!! ")
+    
+
+def costumer():
+    while(True):
+        print('''
+            1. View Items With Prices
+            2. Search for an specific item
+            3. Book Items
+            4. Generate Reciept\n''')
+
+        choice=int(input('Enetr Your choice from above menu: '))
+
+        if choice==1:
+            print(pd.DataFrame(l,index=['Price','Available']).T)
+            
+        elif choice==2:
+            i=input('enter item name: ').capitalize()
+            print(search(i,l))
+
+        elif choice==3:
+            a={}
+            c=n=0
+            for i in l:
+                print('\n',i,l[i][0])
+                k=int(input('enter weight in kg: '))
+                if k<=l[i][1]: 
+                    a[i]=[l[i][0],k]
+                    c+=k
+                    n+=k*l[i][0]
+                else:
+                    print(f'Sorry! {i} are present only {l[i][1]}Kg')
+                
+        elif choice==4:
+            try:
+                reciept=pd.DataFrame(a,index=['price','Qty']).T
+                reciept['Total']=reciept['price']*reciept['Qty']
+                print('\n\n',reciept)
+                print(f'\ntotal weight= {c}kg')
+                print(f'total Price= {n}')
+                break
+            except:
+                print('\nSorry your Cart is empty\nTo generate Reciept Firstly add some items to your cart')
+        else:
+            print('invalid choice!!!')
+
+
+
+print('----------Welcome to Inventry system-----------\n')
+
+print('''
+    1. Owner
+    2. Costumer\n''')
+ch=int(input('Enter your choice:  '))
+if ch==1:
+    owner()
+elif ch==2:
+    costumer()
+else:
+    print('invalid choice')
